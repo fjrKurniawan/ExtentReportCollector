@@ -9,9 +9,11 @@ router.get('/', function(req, res, next) {
 	var release = req.query.release;
 	// Connect to the db
 	MongoClient.connect("mongodb://172.17.10.75:27017/extent", function(err, db) {
-		if(!err) {
 		  var collection = db.collection('project');
 		  collection.find({'name':project}).limit(1).toArray(function(err, projectList){
+		  	if(projectList.length == 0){
+		  		return res.render('error', {'message':'Invalid Project Name', 'error':{}});
+		  	}
 		  	if (projectList[0]._id !== null || projectList[0]._id !== undefined) {
 		  		var projectId = new ObjectID(projectList[0]._id);
 		      	collection = db.collection('report');
@@ -48,7 +50,6 @@ router.get('/', function(req, res, next) {
 		  		console.log("Invalid Project Name");
 		  	}
 		  });
-		}
 	});
 	
 });
